@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pet_app/screens/home_screen.dart';
 import 'package:pet_app/theme/app_colors.dart';
+import 'package:pet_app/l10n/app_localizations.dart';
+import 'package:pet_app/main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -13,29 +15,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<Map<String, String>> onboardingData = [
-    {
-      "title1": "Everything Your\n",
-      "title2": "Pet Needs",
-      "text": "PetPal is your friendly guide for daily pet care, health tips, and a happier pet life.",
-      "image": "assets/images/on_bording/dog_and_cat_1.png"
-    },
-    {
-      "title1": "Simple Tips,\n",
-      "title2": "Happy Pets",
-      "text": "Easy-to-follow tips and advice for your pet's health, hygiene, nutrition, and more.",
-      "image": "assets/images/on_bording/caw_smile.png"
-    },
-    {
-      "title1": "Stronger Bond,\n",
-      "title2": "Better Life",
-      "text": "Understand your pet better and build a stronger bond every single day.",
-      "image": "assets/images/on_bording/dog_and_cat_2.png"
-    }
-  ];
+  List<Map<String, String>> getOnboardingData(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {
+        "title1": l10n.onboarding1Title1,
+        "title2": l10n.onboarding1Title2,
+        "text": l10n.onboarding1Text,
+        "image": "assets/images/on_bording/dog_and_cat_1.png"
+      },
+      {
+        "title1": l10n.onboarding2Title1,
+        "title2": l10n.onboarding2Title2,
+        "text": l10n.onboarding2Text,
+        "image": "assets/images/on_bording/caw_smile.png"
+      },
+      {
+        "title1": l10n.onboarding3Title1,
+        "title2": l10n.onboarding3Title2,
+        "text": l10n.onboarding3Text,
+        "image": "assets/images/on_bording/dog_and_cat_2.png"
+      }
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final onboardingData = getOnboardingData(context);
+    final isMalayalam = Localizations.localeOf(context).languageCode == 'ml';
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAF2ED), // Soft beige background matching images
       body: Stack(
@@ -101,7 +110,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
           ),
           
-          // Floating Skip button
+          // Removed Language Toggle (Top Left)
+
+          // Floating Skip button (Top Right)
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -119,9 +130,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       color: Colors.white.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'Skip',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.skip,
+                      style: const TextStyle(
                         color: AppColors.secondaryTeal,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -149,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                         onboardingData.length,
-                        (index) => buildDot(index: index),
+                        (index) => buildDot(index: index, onboardingData: onboardingData),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -186,7 +197,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              _currentPage == onboardingData.length - 1 ? "Get Started" : "Next",
+                              _currentPage == onboardingData.length - 1 ? l10n.getStarted : l10n.next,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -208,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  AnimatedContainer buildDot({required int index}) {
+  AnimatedContainer buildDot({required int index, required List<Map<String, String>> onboardingData}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(right: 8),
@@ -229,10 +240,8 @@ class OnboardingContent extends StatelessWidget {
     required this.title1,
     required this.title2,
     required this.text,
-    this.bgColor,
   });
   final String image, title1, title2, text;
-  final Color? bgColor;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +249,7 @@ class OnboardingContent extends StatelessWidget {
       children: [
         // Fill the background with the UI color so it's consistent
         Container(
-          color: bgColor ?? AppColors.backgroundCream,
+          color: AppColors.backgroundCream,
         ),
         
         Column(
@@ -264,15 +273,15 @@ class OnboardingContent extends StatelessWidget {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: 50, // Small gradient height to blend the seam
+                    height: 50, 
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            (bgColor ?? AppColors.backgroundCream).withOpacity(0.0),
-                            (bgColor ?? AppColors.backgroundCream),
+                            AppColors.backgroundCream.withOpacity(0.0),
+                            AppColors.backgroundCream,
                           ],
                         ),
                       ),
