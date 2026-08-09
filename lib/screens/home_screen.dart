@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
+import 'package:pet_app/l10n/app_localizations.dart';
+import 'package:pet_app/main.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isMalayalam = Localizations.localeOf(context).languageCode == 'ml';
+    
     return Scaffold(
       backgroundColor: AppColors.backgroundCream,
       body: SafeArea(
@@ -27,13 +32,13 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hello,',
+                        l10n.hello,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.grey[700],
                             ),
                       ),
                       Text(
-                        'Welcome Back!',
+                        l10n.welcomeBack,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -41,9 +46,26 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {},
+                  // Language Dropdown
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.language, color: AppColors.primaryOrange),
+                    onSelected: (String value) {
+                      if (value == 'en') {
+                        PetCareApp.setLocale(context, const Locale('en'));
+                      } else if (value == 'ml') {
+                        PetCareApp.setLocale(context, const Locale('ml'));
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'en',
+                        child: Text('English'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'ml',
+                        child: Text('മലയാളം'),
+                      ),
+                    ],
                   ),
                   IconButton(
                     icon: const Icon(Icons.notifications_none),
@@ -55,32 +77,32 @@ class HomeScreen extends StatelessWidget {
 
               // Promotional Ads Slider
               SizedBox(
-                height: 160,
+                height: 190,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   clipBehavior: Clip.none,
                   children: [
                     _buildPromoCard(
-                      '50% Off Premium\nDog Food',
-                      'Shop Now',
+                      l10n.promo1Title,
+                      l10n.promo1Button,
                       AppColors.bannerGradientStart,
                       AppColors.bannerGradientEnd,
                       Icons.shopping_bag,
                     ),
                     const SizedBox(width: 16),
                     _buildPromoCard(
-                      'New Arrival:\nCat Toys',
-                      'Explore',
+                      l10n.promo2Title,
+                      l10n.promo2Button,
                       const Color(0xFFFFF9C4),
                       const Color(0xFFFFE082),
                       Icons.toys,
                     ),
                     const SizedBox(width: 16),
                     _buildPromoCard(
-                      'Free Vet\nConsultation',
-                      'Book Now',
+                      l10n.promo3Title,
+                      l10n.promo3Button,
                       AppColors.categoryCat,
-                      AppColors.primaryOrange.withOpacity(0.5),
+                      AppColors.primaryOrange.withValues(alpha: 0.5),
                       Icons.medical_services,
                     ),
                   ],
@@ -90,7 +112,7 @@ class HomeScreen extends StatelessWidget {
 
               // Categories
               Text(
-                'Categories',
+                l10n.categories,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -101,13 +123,13 @@ class HomeScreen extends StatelessWidget {
                 clipBehavior: Clip.none,
                 child: Row(
                   children: [
-                    _buildCategoryPill('Cat', 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=150&auto=format&fit=crop', AppColors.categoryCat),
+                    _buildCategoryPill(l10n.cat, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=150&auto=format&fit=crop', AppColors.categoryCat),
                     const SizedBox(width: 12),
-                    _buildCategoryPill('Dog', 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=150&auto=format&fit=crop', AppColors.categoryDog),
+                    _buildCategoryPill(l10n.dog, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=150&auto=format&fit=crop', AppColors.categoryDog),
                     const SizedBox(width: 12),
-                    _buildCategoryPill('Bird', 'https://images.unsplash.com/photo-1605092676920-8ac5ae40c7c8?q=80&w=150&auto=format&fit=crop', AppColors.categoryBird), // Fixed image URL
+                    _buildCategoryPill(l10n.bird, 'https://images.unsplash.com/photo-1605092676920-8ac5ae40c7c8?q=80&w=150&auto=format&fit=crop', AppColors.categoryBird),
                     const SizedBox(width: 12),
-                    _buildCategoryPill('Fish', 'https://images.unsplash.com/photo-1524704796725-9fc3044a58b2?q=80&w=150&auto=format&fit=crop', AppColors.categoryFish), // Fixed image URL
+                    _buildCategoryPill(l10n.fish, 'https://images.unsplash.com/photo-1524704796725-9fc3044a58b2?q=80&w=150&auto=format&fit=crop', AppColors.categoryFish),
                   ],
                 ),
               ),
@@ -117,29 +139,34 @@ class HomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Tips & Suggestions',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Expanded(
+                    child: Text(
+                      l10n.tipsAndSuggestions,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: const Text('View All', style: TextStyle(color: Colors.grey)),
+                    child: Text(l10n.viewAll, style: const TextStyle(color: Colors.grey)),
                   )
                 ],
               ),
               const SizedBox(height: 16),
               _buildTipCard(
-                'Catching Tips for your pet cat',
-                'Learn the best ways to play with your feline friend safely.',
+                l10n.tip1Title,
+                l10n.tip1Subtitle,
                 'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?q=80&w=400&auto=format&fit=crop',
+                l10n.readMore,
               ),
               const SizedBox(height: 16),
               _buildTipCard(
-                'Healthy diet for dogs',
-                'Essential nutrition facts you need to know today.',
+                l10n.tip2Title,
+                l10n.tip2Subtitle,
                 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=400&auto=format&fit=crop',
+                l10n.readMore,
               ),
               const SizedBox(height: 16),
             ],
@@ -153,26 +180,26 @@ class HomeScreen extends StatelessWidget {
         unselectedItemColor: Colors.grey,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.navHome,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            activeIcon: Icon(Icons.shopping_bag),
-            label: 'Shop',
+            icon: const Icon(Icons.shopping_bag_outlined),
+            activeIcon: const Icon(Icons.shopping_bag),
+            label: l10n.navShop,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb_outline),
-            activeIcon: Icon(Icons.lightbulb),
-            label: 'Tips',
+            icon: const Icon(Icons.lightbulb_outline),
+            activeIcon: const Icon(Icons.lightbulb),
+            label: l10n.navTips,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l10n.navProfile,
           ),
         ],
       ),
@@ -231,7 +258,7 @@ class HomeScreen extends StatelessWidget {
             child: Container(
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -258,7 +285,6 @@ class HomeScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 16,
-            // Added error builder for network image just in case
             child: ClipOval(
               child: Image.network(
                 imageUrl,
@@ -280,7 +306,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTipCard(String title, String subtitle, String imageUrl) {
+  Widget _buildTipCard(String title, String subtitle, String imageUrl, String readMoreText) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -288,7 +314,7 @@ class HomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -340,9 +366,9 @@ class HomeScreen extends StatelessWidget {
                     color: AppColors.primaryOrange,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
-                    'Read More',
-                    style: TextStyle(
+                  child: Text(
+                    readMoreText,
+                    style: const TextStyle(
                       color: AppColors.surfaceWhite,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

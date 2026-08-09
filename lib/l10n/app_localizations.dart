@@ -175,6 +175,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Understand your pet better and build a stronger bond every single day.'**
   String get onboarding3Text;
+
+  /// No description provided for @hello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello,'**
+  String get hello;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back!'**
+  String get welcomeBack;
+
+  /// No description provided for @promo1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'50% Off Premium\nDog Food'**
+  String get promo1Title;
+
+  /// No description provided for @promo1Button.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop Now'**
+  String get promo1Button;
+
+  /// No description provided for @promo2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'New Arrival:\nCat Toys'**
+  String get promo2Title;
+
+  /// No description provided for @promo2Button.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get promo2Button;
+
+  /// No description provided for @promo3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Vet\nConsultation'**
+  String get promo3Title;
+
+  /// No description provided for @promo3Button.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Now'**
+  String get promo3Button;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @cat.
+  ///
+  /// In en, this message translates to:
+  /// **'Cat'**
+  String get cat;
+
+  /// No description provided for @dog.
+  ///
+  /// In en, this message translates to:
+  /// **'Dog'**
+  String get dog;
+
+  /// No description provided for @bird.
+  ///
+  /// In en, this message translates to:
+  /// **'Bird'**
+  String get bird;
+
+  /// No description provided for @fish.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish'**
+  String get fish;
+
+  /// No description provided for @tipsAndSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips & Suggestions'**
+  String get tipsAndSuggestions;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @tip1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Catching Tips for your pet cat'**
+  String get tip1Title;
+
+  /// No description provided for @tip1Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn the best ways to play with your feline friend safely.'**
+  String get tip1Subtitle;
+
+  /// No description provided for @tip2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Healthy diet for dogs'**
+  String get tip2Title;
+
+  /// No description provided for @tip2Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential nutrition facts you need to know today.'**
+  String get tip2Subtitle;
+
+  /// No description provided for @readMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read More'**
+  String get readMore;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get navShop;
+
+  /// No description provided for @navTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips'**
+  String get navTips;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
 }
 
 class _AppLocalizationsDelegate
