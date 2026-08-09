@@ -6,7 +6,7 @@
   "getStarted": "Get Started",
   "onboarding1Title1": "Everything Your\n",
   "onboarding1Title2": "Pet Needs",
-  "onboarding1Text": "PetPal is your friendly guide for daily pet care, health tips, and a happier pet life.",
+  "onboarding1Text": "Valatti is your friendly guide for daily pet care, health tips, and a happier pet life.",
   "onboarding2Title1": "Simple Tips,\n",
   "onboarding2Title2": "Happy Pets",
   "onboarding2Text": "Easy-to-follow tips and advice for your pet's health, hygiene, nutrition, and more.",
@@ -44,5 +44,7 @@
   "cow": "Cow",
   "turtle": "Turtle",
   "snake": "Snake",
-  "horse": "Horse"
+  "horse": "Horse",
+  "welcomeToValatti": "Welcome to Valatti",
+  "subtitleValatti": "Your ultimate pet care companion"
 }

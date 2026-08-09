@@ -28,7 +28,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding1Text =>
-      'PetPal is your friendly guide for daily pet care, health tips, and a happier pet life.';
+      'Valatti is your friendly guide for daily pet care, health tips, and a happier pet life.';
 
   @override
   String get onboarding2Title1 => 'Simple Tips,\n';
@@ -147,4 +147,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get horse => 'Horse';
+
+  @override
+  String get welcomeToValatti => 'Welcome to Valatti';
+
+  @override
+  String get subtitleValatti => 'Your ultimate pet care companion';
 }

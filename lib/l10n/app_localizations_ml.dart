@@ -148,4 +148,10 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get horse => 'കുതിര';
+
+  @override
+  String get welcomeToValatti => 'വാലാട്ടിയിലേക്ക് സ്വാഗതം';
+
+  @override
+  String get subtitleValatti => 'നിങ്ങളുടെ പ്രിയപ്പെട്ട പെറ്റ് കെയർ ആപ്പ്';
 }

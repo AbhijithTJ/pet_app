@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Text.
   ///
   /// In en, this message translates to:
-  /// **'PetPal is your friendly guide for daily pet care, health tips, and a happier pet life.'**
+  /// **'Valatti is your friendly guide for daily pet care, health tips, and a happier pet life.'**
   String get onboarding1Text;
 
   /// No description provided for @onboarding2Title1.
@@ -367,6 +367,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Horse'**
   String get horse;
+
+  /// No description provided for @welcomeToValatti.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Valatti'**
+  String get welcomeToValatti;
+
+  /// No description provided for @subtitleValatti.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ultimate pet care companion'**
+  String get subtitleValatti;
 }
 
 class _AppLocalizationsDelegate

@@ -23,7 +23,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                       width: double.infinity,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('assets/images/on_bording/dog_and_cat_1.png'),
+                          image: AssetImage('assets/images/on_bording/horse_and_elephent.png'),
                           fit: BoxFit.cover,
                         ),
                       ),

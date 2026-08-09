@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_app/screens/onboarding_screen.dart';
 import 'package:pet_app/screens/language_selection_screen.dart';
+import 'package:pet_app/screens/splash_screen.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
@@ -63,7 +64,7 @@ class _PetCareAppState extends State<PetCareApp> {
         ),
         useMaterial3: true,
       ),
-      home: const LanguageSelectionScreen(),
+      home: const SplashScreen(),
     );
   }
 }
