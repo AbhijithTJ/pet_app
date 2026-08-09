@@ -37,117 +37,173 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF2ED), // Soft beige background from image
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Skip button
-            Align(
+      backgroundColor: const Color(0xFFFAF2ED), // Soft beige background matching images
+      body: Stack(
+        children: [
+          // Paw Print Overlays (Background)
+          Positioned(
+            top: 80,
+            left: 20,
+            child: Transform.rotate(
+              angle: -0.2,
+              child: Icon(Icons.pets, size: 40, color: AppColors.primaryOrange.withOpacity(0.12)),
+            ),
+          ),
+          Positioned(
+            top: 50,
+            right: 40,
+            child: Transform.rotate(
+              angle: 0.3,
+              child: Icon(Icons.pets, size: 24, color: AppColors.secondaryTeal.withOpacity(0.15)),
+            ),
+          ),
+          Positioned(
+            bottom: 250,
+            left: -10,
+            child: Transform.rotate(
+              angle: 0.1,
+              child: Icon(Icons.pets, size: 60, color: AppColors.primaryOrange.withOpacity(0.08)),
+            ),
+          ),
+          Positioned(
+            bottom: 180,
+            right: 30,
+            child: Transform.rotate(
+              angle: -0.3,
+              child: Icon(Icons.pets, size: 45, color: AppColors.secondaryTeal.withOpacity(0.1)),
+            ),
+          ),
+          Positioned(
+            top: 350,
+            right: -20,
+            child: Transform.rotate(
+              angle: 0.4,
+              child: Icon(Icons.pets, size: 80, color: AppColors.primaryOrange.withOpacity(0.05)),
+            ),
+          ),
+
+          // The sliding pages
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (value) {
+              setState(() {
+                _currentPage = value;
+              });
+            },
+            itemCount: onboardingData.length,
+            itemBuilder: (context, index) {
+              return OnboardingContent(
+                image: onboardingData[index]["image"]!,
+                title1: onboardingData[index]["title1"]!,
+                title2: onboardingData[index]["title2"]!,
+                text: onboardingData[index]["text"]!,
+              );
+            },
+          ),
+          
+          // Floating Skip button
+          SafeArea(
+            child: Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: const EdgeInsets.only(right: 16.0, top: 16.0),
+                padding: const EdgeInsets.only(right: 20.0, top: 10.0),
                 child: TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const HomeScreen()),
                     );
                   },
-                  child: const Text(
-                    'Skip',
-                    style: TextStyle(
-                      color: AppColors.secondaryTeal,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(
+                        color: AppColors.secondaryTeal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-            
-            // Pages
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (value) {
-                  setState(() {
-                    _currentPage = value;
-                  });
-                },
-                itemCount: onboardingData.length,
-                itemBuilder: (context, index) => OnboardingContent(
-                  image: onboardingData[index]["image"]!,
-                  title1: onboardingData[index]["title1"]!,
-                  title2: onboardingData[index]["title2"]!,
-                  text: onboardingData[index]["text"]!,
-                ),
-              ),
-            ),
+          ),
 
-            // Bottom section (Indicators & Button)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
-              child: Column(
-                children: [
-                  // Dot indicator
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      onboardingData.length,
-                      (index) => buildDot(index: index),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  // Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_currentPage == onboardingData.length - 1) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
-                        } else {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeIn,
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _currentPage == onboardingData.length - 1
-                            ? AppColors.secondaryTeal
-                            : AppColors.primaryOrange,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 0,
+          // Fixed Bottom Controls (Dots & Button)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Dot indicator
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        onboardingData.length,
+                        (index) => buildDot(index: index),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _currentPage == onboardingData.length - 1 ? "Get Started" : "Next",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    ),
+                    const SizedBox(height: 32),
+                    // Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_currentPage == onboardingData.length - 1) {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeIn,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _currentPage == onboardingData.length - 1
+                              ? AppColors.secondaryTeal
+                              : AppColors.primaryOrange,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.arrow_forward, size: 20),
-                        ],
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _currentPage == onboardingData.length - 1 ? "Get Started" : "Next",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward, size: 20),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -173,61 +229,98 @@ class OnboardingContent extends StatelessWidget {
     required this.title1,
     required this.title2,
     required this.text,
+    this.bgColor,
   });
   final String image, title1, title2, text;
+  final Color? bgColor;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          flex: 4,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Image.asset(
-              image,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Center(
-                child: Icon(Icons.broken_image, size: 100, color: Colors.grey),
+        // Fill the background with the UI color so it's consistent
+        Container(
+          color: bgColor ?? AppColors.backgroundCream,
+        ),
+        
+        Column(
+          children: [
+            // Top Half - Image with a small merging gradient
+            Expanded(
+              flex: 12,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(image),
+                        fit: BoxFit.cover, 
+                      ),
+                    ),
+                  ),
+                  // Small merging container at the bottom
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 50, // Small gradient height to blend the seam
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            (bgColor ?? AppColors.backgroundCream).withOpacity(0.0),
+                            (bgColor ?? AppColors.backgroundCream),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              children: [
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                          height: 1.2,
-                        ),
-                    children: [
-                      TextSpan(text: title1),
-                      TextSpan(
-                        text: title2,
-                        style: const TextStyle(color: AppColors.primaryOrange),
+            
+            // Bottom Half - Text
+            Expanded(
+              flex: 11,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32.0, 40.0, 32.0, 140.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
+                              height: 1.2,
+                            ),
+                        children: [
+                          TextSpan(text: title1),
+                          TextSpan(
+                            text: title2,
+                            style: const TextStyle(color: AppColors.primaryOrange),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[700],
-                        height: 1.5,
-                      ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
