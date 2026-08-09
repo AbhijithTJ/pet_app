@@ -3,6 +3,7 @@ import 'package:pet_app/screens/home_screen.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
 import 'package:pet_app/main.dart';
+import 'package:pet_app/screens/category_selection_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -121,7 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      MaterialPageRoute(builder: (context) => const CategorySelectionScreen()),
                     );
                   },
                   child: Container(
@@ -173,7 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           if (_currentPage == onboardingData.length - 1) {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (context) => const HomeScreen(),
+                                builder: (context) => const CategorySelectionScreen(),
                               ),
                             );
                           } else {

@@ -319,6 +319,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get navProfile;
+
+  /// No description provided for @chooseCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your favorite categories'**
+  String get chooseCategories;
+
+  /// No description provided for @selectUpTo5.
+  ///
+  /// In en, this message translates to:
+  /// **'Select up to 5 categories'**
+  String get selectUpTo5;
+
+  /// No description provided for @continueText.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueText;
+
+  /// No description provided for @rabbit.
+  ///
+  /// In en, this message translates to:
+  /// **'Rabbit'**
+  String get rabbit;
+
+  /// No description provided for @cow.
+  ///
+  /// In en, this message translates to:
+  /// **'Cow'**
+  String get cow;
+
+  /// No description provided for @turtle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turtle'**
+  String get turtle;
+
+  /// No description provided for @snake.
+  ///
+  /// In en, this message translates to:
+  /// **'Snake'**
+  String get snake;
+
+  /// No description provided for @horse.
+  ///
+  /// In en, this message translates to:
+  /// **'Horse'**
+  String get horse;
 }
 
 class _AppLocalizationsDelegate

@@ -36,5 +36,13 @@
   "navHome": "Home",
   "navShop": "Shop",
   "navTips": "Tips",
-  "navProfile": "Profile"
+  "navProfile": "Profile",
+  "chooseCategories": "Choose your favorite categories",
+  "selectUpTo5": "Select up to 5 categories",
+  "continueText": "Continue",
+  "rabbit": "Rabbit",
+  "cow": "Cow",
+  "turtle": "Turtle",
+  "snake": "Snake",
+  "horse": "Horse"
 }

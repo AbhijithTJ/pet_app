@@ -36,5 +36,13 @@
   "navHome": "ഹോം",
   "navShop": "ഷോപ്പ്",
   "navTips": "നുറുങ്ങുകൾ",
-  "navProfile": "പ്രൊഫൈൽ"
+  "navProfile": "പ്രൊഫൈൽ",
+  "chooseCategories": "നിങ്ങളുടെ പ്രിയപ്പെട്ട വിഭാഗങ്ങൾ തിരഞ്ഞെടുക്കുക",
+  "selectUpTo5": "പരമാവധി 5 എണ്ണം തിരഞ്ഞെടുക്കാം",
+  "continueText": "തുടരുക",
+  "rabbit": "മുയൽ",
+  "cow": "പശു",
+  "turtle": "ആമ",
+  "snake": "പാമ്പ്",
+  "horse": "കുതിര"
 }

@@ -123,4 +123,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProfile => 'Profile';
+
+  @override
+  String get chooseCategories => 'Choose your favorite categories';
+
+  @override
+  String get selectUpTo5 => 'Select up to 5 categories';
+
+  @override
+  String get continueText => 'Continue';
+
+  @override
+  String get rabbit => 'Rabbit';
+
+  @override
+  String get cow => 'Cow';
+
+  @override
+  String get turtle => 'Turtle';
+
+  @override
+  String get snake => 'Snake';
+
+  @override
+  String get horse => 'Horse';
 }

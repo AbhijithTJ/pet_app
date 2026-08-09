@@ -123,4 +123,29 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get navProfile => 'പ്രൊഫൈൽ';
+
+  @override
+  String get chooseCategories =>
+      'നിങ്ങളുടെ പ്രിയപ്പെട്ട വിഭാഗങ്ങൾ തിരഞ്ഞെടുക്കുക';
+
+  @override
+  String get selectUpTo5 => 'പരമാവധി 5 എണ്ണം തിരഞ്ഞെടുക്കാം';
+
+  @override
+  String get continueText => 'തുടരുക';
+
+  @override
+  String get rabbit => 'മുയൽ';
+
+  @override
+  String get cow => 'പശു';
+
+  @override
+  String get turtle => 'ആമ';
+
+  @override
+  String get snake => 'പാമ്പ്';
+
+  @override
+  String get horse => 'കുതിര';
 }
