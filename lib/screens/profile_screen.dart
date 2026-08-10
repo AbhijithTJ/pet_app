@@ -92,10 +92,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 36,
                     backgroundColor: AppColors.primaryOrange.withOpacity(0.2),
-                    child: const Icon(
-                      Icons.person,
-                      size: 40,
-                      color: AppColors.primaryOrange,
+                    child: Text(
+                      isLoggedIn
+                          ? (user.email?.split('@').first.substring(0, 2).toUpperCase() ?? "")
+                          : "G",
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryOrange,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),

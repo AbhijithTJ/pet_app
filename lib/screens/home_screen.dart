@@ -94,11 +94,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
                     },
-                    child: const CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(
-                          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'),
+                    child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: AppColors.primaryOrange.withOpacity(0.2),
+                    child: Text(
+                      firebaseService.currentUser != null
+                          ? (firebaseService.currentUser!.email?.split('@').first.substring(0,2).toUpperCase() ?? "")
+                          : "G",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryOrange,
+                      ),
                     ),
+                  ),
                   ),
                   const SizedBox(width: 16),
                   Column(
