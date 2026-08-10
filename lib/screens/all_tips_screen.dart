@@ -56,16 +56,17 @@ class AllTipsScreen extends StatelessWidget {
                 imageUrl,
                 l10n.readMore,
                 () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ArticleDetailScreen(
-                        title: title,
-                        content: '$subtitle\n\n$description',
-                        imageUrl: imageUrl,
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ArticleDetailScreen(
+                          articleId: docs[index].id,
+                          title: title,
+                          content: '$subtitle\n\n$description',
+                          imageUrl: imageUrl,
+                        ),
                       ),
-                    ),
-                  );
+                    );
                 },
               );
             },

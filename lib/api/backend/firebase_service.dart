@@ -40,4 +40,48 @@ class FirebaseService {
         .where('categoryId', isEqualTo: categoryId)
         .snapshots();
   }
+
+  /// Get stream of comments for an article
+  Stream<QuerySnapshot> getCommentsForArticle(String articleId) {
+    return _firestore
+        .collection('articles')
+        .doc(articleId)
+        .collection('comments')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  /// Add a comment to an article
+  Future<void> addComment(String articleId, String text, String userName) async {
+    await _firestore
+        .collection('articles')
+        .doc(articleId)
+        .collection('comments')
+        .add({
+      'text': text,
+      'userName': userName,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Toggle like (Since there's no auth, we'll just increment or decrement based on local state)
+  Future<void> toggleLike(String articleId, bool isCurrentlyLiked) async {
+    final docRef = _firestore.collection('articles').doc(articleId);
+    
+    // Use transaction to ensure safe increment/decrement
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) return;
+      
+      int currentLikes = 0;
+      if (snapshot.data()!.containsKey('likes')) {
+        currentLikes = snapshot.data()!['likes'] as int;
+      }
+
+      int newLikes = isCurrentlyLiked ? (currentLikes - 1) : (currentLikes + 1);
+      if (newLikes < 0) newLikes = 0; // Prevent negative likes
+
+      transaction.update(docRef, {'likes': newLikes});
+    });
+  }
 }

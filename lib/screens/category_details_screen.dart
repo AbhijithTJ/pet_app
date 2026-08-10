@@ -46,6 +46,7 @@ class CategoryDetailsScreen extends StatelessWidget {
               final String content = article['content'] ?? 'No Content';
               final String summary = article['summary'] ?? 'No Summary';
               final String imageUrl = article['imageUrl'] ?? '';
+              final String articleId = articles[index].id;
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 16.0),
@@ -60,6 +61,7 @@ class CategoryDetailsScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ArticleDetailScreen(
+                          articleId: articleId,
                           title: title,
                           content: content,
                           imageUrl: imageUrl,

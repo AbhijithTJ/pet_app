@@ -255,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Column(
                     children: displayDocs.map((doc) {
                       final data = doc.data() as Map<String, dynamic>;
+                      final String id = doc.id;
                       final String title = data['title'] ?? 'No Title';
                       final String category = data['category'] ?? '';
                       final String description = data['description'] ?? 'No Description';
@@ -270,6 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           l10n.readMore,
                           () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(
+                              articleId: id,
                               title: title,
                               content: '$subtitle\n\n$description',
                               imageUrl: imageUrl,
