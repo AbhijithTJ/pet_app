@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "720648257569",
+    "project_id": "valatti-a287b",
+    "storage_bucket": "valatti-a287b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:720648257569:android:65fe5f81d64fb5ebe22360",
+        "android_client_info": {
+          "package_name": "com.valatti.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfQx3w9phhhimglbAMxkk0NnQ75U0w35w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

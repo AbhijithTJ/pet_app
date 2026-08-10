@@ -5,9 +5,12 @@ import 'package:pet_app/screens/language_selection_screen.dart';
 import 'package:pet_app/screens/splash_screen.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const PetCareApp());
 }
 

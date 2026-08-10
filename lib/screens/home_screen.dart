@@ -6,6 +6,9 @@ import 'package:pet_app/screens/category_details_screen.dart';
 import 'package:pet_app/screens/all_categories_screen.dart';
 import 'package:pet_app/screens/all_tips_screen.dart';
 import 'package:pet_app/screens/article_detail_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pet_app/api/backend/firebase_service.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -13,6 +16,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isMalayalam = Localizations.localeOf(context).languageCode == 'ml';
+    final firebaseService = FirebaseService();
     
     return Scaffold(
       backgroundColor: AppColors.backgroundCream,
@@ -121,38 +125,49 @@ class HomeScreen extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 16),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildCategoryCard(l10n.cat, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=150&auto=format&fit=crop', AppColors.categoryCat, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'cat', categoryName: l10n.cat)));
-                      }),
-                      _buildCategoryCard(l10n.dog, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=150&auto=format&fit=crop', AppColors.categoryDog, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'dog', categoryName: l10n.dog)));
-                      }),
-                      _buildCategoryCard(l10n.bird, 'https://images.unsplash.com/photo-1605092676920-8ac5ae40c7c8?q=80&w=150&auto=format&fit=crop', AppColors.categoryBird, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'bird', categoryName: l10n.bird)));
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildCategoryCard(l10n.fish, 'https://images.unsplash.com/photo-1524704796725-9fc3044a58b2?q=80&w=150&auto=format&fit=crop', AppColors.categoryFish, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'fish', categoryName: l10n.fish)));
-                      }),
-                      _buildCategoryCard(l10n.rabbit, 'https://images.unsplash.com/photo-1585110396000-c9fd45c2cb17?q=80&w=150&auto=format&fit=crop', const Color(0xFFFFCCBC), () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'rabbit', categoryName: l10n.rabbit)));
-                      }),
-                      _buildViewAllCard(l10n.viewAll, () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const AllCategoriesScreen()));
-                      }),
-                    ],
-                  ),
-                ],
+              StreamBuilder<QuerySnapshot>(
+                stream: firebaseService.getCategoriesStream(limit: 5),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
+                  }
+                  if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const SizedBox(); // Fallback if no data
+                  }
+                  
+                  final docs = snapshot.data!.docs;
+                  
+                  // Build a grid of up to 6 items (5 from firestore + View All)
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 12.0,
+                      mainAxisSpacing: 16.0,
+                      childAspectRatio: 0.8, // Adjust for 3 columns
+                    ),
+                    itemCount: docs.length < 5 ? docs.length + 1 : 6,
+                    itemBuilder: (context, index) {
+                      if (index == docs.length || index == 5) {
+                        return _buildViewAllCard(l10n.viewAll, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AllCategoriesScreen()));
+                        });
+                      }
+                      
+                      final doc = docs[index];
+                      final data = doc.data() as Map<String, dynamic>;
+                      final String id = doc.id;
+                      final String name = data['name'] ?? 'Unknown';
+                      final String imageUrl = data['imageUrl'] ?? 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=300&auto=format&fit=crop';
+                      final Color color = AppColors.categoryCat; // Default
+                      
+                      return _buildCategoryCard(name, imageUrl, color, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: id, categoryName: name)));
+                      });
+                    },
+                  );
+                },
               ),
               const SizedBox(height: 32),
 
@@ -178,31 +193,43 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              _buildTipCard(
-                l10n.tip1Title,
-                l10n.tip1Subtitle,
-                'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?q=80&w=400&auto=format&fit=crop',
-                l10n.readMore,
-                () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(
-                    title: l10n.tip1Title,
-                    content: '${l10n.tip1Subtitle}\n\nHere are some detailed ways to play with your feline friend safely. Ensure you use toys that are not easily swallowable and avoid pointing laser pointers directly into their eyes. Always supervise playtime.',
-                    imageUrl: 'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?q=80&w=600&auto=format&fit=crop',
-                  )));
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildTipCard(
-                l10n.tip2Title,
-                l10n.tip2Subtitle,
-                'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=400&auto=format&fit=crop',
-                l10n.readMore,
-                () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(
-                    title: l10n.tip2Title,
-                    content: '${l10n.tip2Subtitle}\n\nDogs require a balanced diet of protein, carbohydrates, and healthy fats. Always consult your vet before making major changes to your dog\'s diet. Fresh water should always be available.',
-                    imageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=600&auto=format&fit=crop',
-                  )));
+              StreamBuilder<QuerySnapshot>(
+                stream: firebaseService.getTipsStream(limit: 2),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
+                  }
+                  if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const SizedBox();
+                  }
+
+                  return Column(
+                    children: snapshot.data!.docs.map((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final String title = data['title'] ?? 'No Title';
+                      final String category = data['category'] ?? '';
+                      final String description = data['description'] ?? 'No Description';
+                      final String subtitle = data['subtitle'] ?? 'Category: $category'; 
+                      final String imageUrl = data['imageUrl'] ?? 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=600&auto=format&fit=crop';
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: _buildTipCard(
+                          title,
+                          subtitle,
+                          imageUrl,
+                          l10n.readMore,
+                          () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(
+                              title: title,
+                              content: '$subtitle\n\n$description',
+                              imageUrl: imageUrl,
+                            )));
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  );
                 },
               ),
               const SizedBox(height: 16),
