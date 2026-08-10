@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
 import 'package:pet_app/api/backend/preference_service.dart';
 import 'package:pet_app/screens/auth/login_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pet_app/l10n/app_localizations.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final String articleId;
@@ -31,14 +34,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   
   bool _isLiked = false;
   int _likesCount = 0;
-  bool _isLoggedIn = false; // Dummy state for now
 
   @override
   void initState() {
     super.initState();
     _checkIfLiked();
     _fetchInitialLikes();
+    
+    // Listen to auth state changes to refresh UI if user logs in via popup
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (mounted) {
+        setState(() {}); // Trigger rebuild to update UI based on auth state
+      }
+    });
   }
+
+  bool get _isLoggedIn => FirebaseAuth.instance.currentUser != null;
 
   Future<void> _checkIfLiked() async {
     final liked = await _preferenceService.isArticleLiked(widget.articleId);
@@ -59,16 +70,18 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   void _showLoginPopup() {
+    final l10n = AppLocalizations.of(context)!;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Login Required"),
-        content: const Text("You need to login to post a comment or like this article."),
+        title: Text(l10n.loginRequired),
+        content: Text(l10n.loginRequiredMessage),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -76,20 +89,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
-              ).then((_) {
-                // For demonstration, we simulate user logging in after returning
-                if (mounted) {
-                  setState(() {
-                    _isLoggedIn = true;
-                  });
-                }
-              });
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryOrange,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            child: const Text("Login", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.login, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

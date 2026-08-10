@@ -1,7 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  /// Get current user
+  User? get currentUser => _auth.currentUser;
+
+  /// Listen to auth state changes
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  /// Sign in with email and password
+  Future<UserCredential> signIn(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// Register with email and password
+  Future<UserCredential> register(String email, String password) async {
+    return await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// Sign out
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
 
   /// Fetch a stream of categories.
   /// If [limit] is provided, it will restrict the number of documents returned.

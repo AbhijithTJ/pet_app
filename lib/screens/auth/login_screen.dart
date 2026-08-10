@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/widgets/custom_text_field.dart';
 import 'package:pet_app/screens/auth/register_screen.dart';
+import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pet_app/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,11 +16,43 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FirebaseService _firebaseService = FirebaseService();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
-  void _login() {
-    // Navigate back to previous screen
-    Navigator.pop(context);
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _firebaseService.signIn(email, password);
+      if (mounted) {
+        Navigator.pop(context); // Go back after successful login
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.toString()}")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -29,6 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F0F6), // Fallback background
       body: SingleChildScrollView(
@@ -66,29 +103,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                     const SizedBox(height: 10),
-                    const Text(
-                      "Welcome Back 👋",
-                      style: TextStyle(
+                    Text(
+                      l10n.welcomeBack,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF5A315D), // Deep purple theme color
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "Login to continue to your account",
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    Text(
+                      l10n.loginToContinue,
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                     const SizedBox(height: 32),
                     
                     CustomTextField(
-                      hintText: "Email or Phone",
+                      hintText: l10n.emailOrPhone,
                       prefixIcon: Icons.person_outline,
                       controller: _emailController,
                     ),
                     
                     CustomTextField(
-                      hintText: "Password",
+                      hintText: l10n.password,
                       prefixIcon: Icons.lock_outline,
                       isPassword: !_isPasswordVisible,
                       controller: _passwordController,
@@ -109,53 +146,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {},
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(color: Color(0xFF5A315D), fontWeight: FontWeight.w600),
+                        child: Text(
+                          l10n.forgotPassword,
+                          style: const TextStyle(color: AppColors.primaryOrange),
                         ),
                       ),
                     ),
                     
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     
                     // Login Button
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 50,
                       child: ElevatedButton(
-                        onPressed: _login,
+                        onPressed: _isLoading ? null : _login,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B3E6D),
+                          backgroundColor: AppColors.primaryOrange,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 0,
+                          elevation: 2,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                "Login",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        child: _isLoading 
+                          ? const SizedBox(
+                              width: 24, 
+                              height: 24, 
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                            )
+                          : Text(
+                              l10n.login,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.pets, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                        ),
                       ),
                     ),
                     
@@ -165,18 +191,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account? ", style: TextStyle(color: Colors.grey)),
-                        GestureDetector(
-                          onTap: () {
+                        Text(
+                          l10n.dontHaveAccount,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        TextButton(
+                          onPressed: () {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (context) => const RegisterScreen()),
                             );
                           },
-                          child: const Text(
-                            "Register",
-                            style: TextStyle(
-                              color: Color(0xFF5A315D),
+                          child: Text(
+                            l10n.signUp,
+                            style: const TextStyle(
+                              color: AppColors.primaryOrange,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
