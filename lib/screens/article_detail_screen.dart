@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class ArticleDetailScreen extends StatelessWidget {
   final String title;
@@ -60,12 +61,15 @@ class ArticleDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Text(
-                      content,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.6,
-                      ),
+                    child: Html(
+                      data: content,
+                      style: {
+                        "body": Style(
+                          fontSize: FontSize(16.0),
+                          lineHeight: LineHeight(1.6),
+                          margin: Margins.zero,
+                        ),
+                      },
                     ),
                   ),
                   const SizedBox(height: 40),

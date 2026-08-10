@@ -32,4 +32,12 @@ class FirebaseService {
         // so we'll just fetch Active ones. You can sort client-side if needed.
         .snapshots();
   }
+
+  /// Fetch a stream of articles for a specific category.
+  Stream<QuerySnapshot> getArticlesByCategoryId(String categoryId) {
+    return _firestore
+        .collection('articles')
+        .where('categoryId', isEqualTo: categoryId)
+        .snapshots();
+  }
 }
