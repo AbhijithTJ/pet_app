@@ -4,6 +4,7 @@ import 'package:pet_app/l10n/app_localizations.dart';
 import 'package:pet_app/screens/category_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:pet_app/utils/localization_helper.dart';
 
 class AllCategoriesScreen extends StatelessWidget {
   const AllCategoriesScreen({super.key});
@@ -54,7 +55,7 @@ class AllCategoriesScreen extends StatelessWidget {
               final data = doc.data() as Map<String, dynamic>;
               
               final String id = doc.id;
-              final String name = data['name'] ?? 'Unknown';
+              final String name = getLocalizedText(data, 'name', context).isNotEmpty ? getLocalizedText(data, 'name', context) : 'Unknown';
               final String imageUrl = data['imageUrl'] ?? 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=300&auto=format&fit=crop';
               // Use a default color fallback if not in data
               final Color color = AppColors.categoryCat;

@@ -4,6 +4,7 @@ import 'package:pet_app/l10n/app_localizations.dart';
 import 'package:pet_app/screens/article_detail_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:pet_app/utils/localization_helper.dart';
 
 class AllTipsScreen extends StatelessWidget {
   const AllTipsScreen({super.key});
@@ -42,11 +43,11 @@ class AllTipsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               
-              final String title = data['title'] ?? 'No Title';
-              final String category = data['category'] ?? '';
-              final String description = data['description'] ?? 'No Description';
+              final String title = getLocalizedText(data, 'title', context).isNotEmpty ? getLocalizedText(data, 'title', context) : 'No Title';
+              final String category = getLocalizedText(data, 'category', context);
+              final String description = getLocalizedText(data, 'description', context).isNotEmpty ? getLocalizedText(data, 'description', context) : 'No Description';
               // Use description as subtitle if subtitle is not present
-              final String subtitle = data['subtitle'] ?? 'Category: $category'; 
+              final String subtitle = getLocalizedText(data, 'subtitle', context).isNotEmpty ? getLocalizedText(data, 'subtitle', context) : (category.isNotEmpty ? 'Category: $category' : '');
               final String imageUrl = data['imageUrl'] ?? 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=600&auto=format&fit=crop';
 
               return _buildTipCard(

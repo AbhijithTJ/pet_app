@@ -10,6 +10,7 @@ import 'package:pet_app/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
 import 'package:pet_app/api/backend/preference_service.dart';
+import 'package:pet_app/utils/localization_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,14 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
             label: l10n.navHome,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.shopping_bag_outlined),
-            activeIcon: const Icon(Icons.shopping_bag),
-            label: l10n.navShop,
+            icon: const Icon(Icons.category_outlined),
+            activeIcon: const Icon(Icons.category),
+            label: l10n.categories,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.lightbulb_outline),
             activeIcon: const Icon(Icons.lightbulb),
-            label: l10n.navTips,
+            label: l10n.tipsAndSuggestions,
           ),
         ],
       ),
@@ -79,7 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody(BuildContext context, AppLocalizations l10n, FirebaseService firebaseService) {
-    // Default to Home View
+    if (_currentIndex == 1) {
+      return const AllCategoriesScreen();
+    }
+    if (_currentIndex == 2) {
+      return const AllTipsScreen();
+    }
+    
+    // Default to Home View (index 0)
     final isMalayalam = Localizations.localeOf(context).languageCode == 'ml';
     return SafeArea(
       child: SingleChildScrollView(
@@ -310,10 +318,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: displayDocs.map((doc) {
                       final data = doc.data() as Map<String, dynamic>;
                       final String id = doc.id;
-                      final String title = data['title'] ?? 'No Title';
-                      final String category = data['category'] ?? '';
-                      final String description = data['description'] ?? 'No Description';
-                      final String subtitle = data['subtitle'] ?? 'Category: $category'; 
+                      final String title = getLocalizedText(data, 'title', context).isNotEmpty ? getLocalizedText(data, 'title', context) : 'No Title';
+                      final String category = getLocalizedText(data, 'category', context);
+                      final String description = getLocalizedText(data, 'description', context).isNotEmpty ? getLocalizedText(data, 'description', context) : 'No Description';
+                      final String subtitle = getLocalizedText(data, 'subtitle', context).isNotEmpty ? getLocalizedText(data, 'subtitle', context) : (category.isNotEmpty ? 'Category: $category' : '');
                       final String imageUrl = data['imageUrl'] ?? 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=600&auto=format&fit=crop';
 
                       return Padding(

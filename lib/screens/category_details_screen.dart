@@ -4,6 +4,7 @@ import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/screens/article_detail_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:pet_app/utils/localization_helper.dart';
 
 class CategoryDetailsScreen extends StatelessWidget {
   final String category;
@@ -42,9 +43,9 @@ class CategoryDetailsScreen extends StatelessWidget {
             itemCount: articles.length,
             itemBuilder: (context, index) {
               final article = articles[index].data() as Map<String, dynamic>;
-              final String title = article['title'] ?? 'No Title';
-              final String content = article['content'] ?? 'No Content';
-              final String summary = article['summary'] ?? 'No Summary';
+              final String title = getLocalizedText(article, 'title', context).isNotEmpty ? getLocalizedText(article, 'title', context) : 'No Title';
+              final String content = getLocalizedText(article, 'content', context).isNotEmpty ? getLocalizedText(article, 'content', context) : 'No Content';
+              final String summary = getLocalizedText(article, 'summary', context).isNotEmpty ? getLocalizedText(article, 'summary', context) : 'No Summary';
               final String imageUrl = article['imageUrl'] ?? '';
               final String articleId = articles[index].id;
 
