@@ -22,4 +22,14 @@ class FirebaseService {
     }
     return query.snapshots();
   }
+
+  /// Fetch a stream of sliders (promotional ads).
+  Stream<QuerySnapshot> getSlidersStream() {
+    return _firestore
+        .collection('sliders')
+        .where('status', isEqualTo: 'Active')
+        // Ordering by createdAt requires an index in Firestore, 
+        // so we'll just fetch Active ones. You can sort client-side if needed.
+        .snapshots();
+  }
 }

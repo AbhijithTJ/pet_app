@@ -8,9 +8,30 @@ import 'package:pet_app/screens/all_tips_screen.dart';
 import 'package:pet_app/screens/article_detail_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:pet_app/api/backend/preference_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<String> _selectedCategories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await PreferenceService().getSelectedCategories();
+    setState(() {
+      _selectedCategories = prefs;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,37 +104,36 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // Promotional Ads Slider
-              SizedBox(
-                height: 190,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  children: [
-                    _buildPromoCard(
-                      l10n.promo1Title,
-                      l10n.promo1Button,
-                      AppColors.bannerGradientStart,
-                      AppColors.bannerGradientEnd,
-                      Icons.shopping_bag,
+              StreamBuilder<QuerySnapshot>(
+                stream: firebaseService.getSlidersStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(
+                      height: 190,
+                      child: Center(child: CircularProgressIndicator(color: AppColors.primaryOrange)),
+                    );
+                  }
+                  if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const SizedBox(); // Fallback if no sliders
+                  }
+
+                  return SizedBox(
+                    height: 180,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
+                      itemCount: snapshot.data!.docs.length,
+                      separatorBuilder: (context, index) => const SizedBox(width: 16),
+                      itemBuilder: (context, index) {
+                        final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                        final String title = data['title'] ?? '';
+                        final String imageUrl = data['imageUrl'] ?? '';
+
+                        return _buildBannerSlider(title, imageUrl);
+                      },
                     ),
-                    const SizedBox(width: 16),
-                    _buildPromoCard(
-                      l10n.promo2Title,
-                      l10n.promo2Button,
-                      const Color(0xFFFFF9C4),
-                      const Color(0xFFFFE082),
-                      Icons.toys,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildPromoCard(
-                      l10n.promo3Title,
-                      l10n.promo3Button,
-                      AppColors.categoryCat,
-                      AppColors.primaryOrange.withValues(alpha: 0.5),
-                      Icons.medical_services,
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
               const SizedBox(height: 32),
 
@@ -126,7 +146,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               StreamBuilder<QuerySnapshot>(
-                stream: firebaseService.getCategoriesStream(limit: 5),
+                stream: firebaseService.getCategoriesStream(), // fetch all
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
@@ -135,7 +155,18 @@ class HomeScreen extends StatelessWidget {
                     return const SizedBox(); // Fallback if no data
                   }
                   
-                  final docs = snapshot.data!.docs;
+                  // Sort docs: selected categories first
+                  final docs = snapshot.data!.docs.toList();
+                  docs.sort((a, b) {
+                    final aSelected = _selectedCategories.contains(a.id);
+                    final bSelected = _selectedCategories.contains(b.id);
+                    if (aSelected && !bSelected) return -1;
+                    if (!aSelected && bSelected) return 1;
+                    return 0;
+                  });
+                  
+                  // Limit to 5 for UI
+                  final displayDocs = docs.take(5).toList();
                   
                   // Build a grid of up to 6 items (5 from firestore + View All)
                   return GridView.builder(
@@ -147,15 +178,15 @@ class HomeScreen extends StatelessWidget {
                       mainAxisSpacing: 16.0,
                       childAspectRatio: 0.8, // Adjust for 3 columns
                     ),
-                    itemCount: docs.length < 5 ? docs.length + 1 : 6,
+                    itemCount: displayDocs.length < 5 ? displayDocs.length + 1 : 6,
                     itemBuilder: (context, index) {
-                      if (index == docs.length || index == 5) {
+                      if (index == displayDocs.length || index == 5) {
                         return _buildViewAllCard(l10n.viewAll, () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const AllCategoriesScreen()));
                         });
                       }
                       
-                      final doc = docs[index];
+                      final doc = displayDocs[index];
                       final data = doc.data() as Map<String, dynamic>;
                       final String id = doc.id;
                       final String name = data['name'] ?? 'Unknown';
@@ -194,7 +225,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               StreamBuilder<QuerySnapshot>(
-                stream: firebaseService.getTipsStream(limit: 2),
+                stream: firebaseService.getTipsStream(), // fetch all
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
@@ -203,8 +234,26 @@ class HomeScreen extends StatelessWidget {
                     return const SizedBox();
                   }
 
+                  // Sort docs: tips in selected categories first
+                  final docs = snapshot.data!.docs.toList();
+                  docs.sort((a, b) {
+                    final dataA = a.data() as Map<String, dynamic>;
+                    final dataB = b.data() as Map<String, dynamic>;
+                    
+                    // Assuming tip has a 'category' field pointing to category id
+                    final aSelected = _selectedCategories.contains(dataA['category']);
+                    final bSelected = _selectedCategories.contains(dataB['category']);
+                    
+                    if (aSelected && !bSelected) return -1;
+                    if (!aSelected && bSelected) return 1;
+                    return 0;
+                  });
+
+                  // Limit to 2 for UI
+                  final displayDocs = docs.take(2).toList();
+
                   return Column(
-                    children: snapshot.data!.docs.map((doc) {
+                    children: displayDocs.map((doc) {
                       final data = doc.data() as Map<String, dynamic>;
                       final String title = data['title'] ?? 'No Title';
                       final String category = data['category'] ?? '';
@@ -270,69 +319,62 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPromoCard(String title, String buttonText, Color startColor, Color endColor, IconData icon) {
+  Widget _buildBannerSlider(String title, String imageUrl) {
     return Container(
-      width: 280,
-      padding: const EdgeInsets.all(20),
+      width: 300,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          colors: [startColor, endColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 6,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryOrange,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    buttonText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.4),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 40,
-                color: AppColors.primaryOrange,
-              ),
-            ),
+        color: Colors.grey[200],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background Image
+            if (imageUrl.isNotEmpty)
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => 
+                   const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+              )
+            else
+              const Icon(Icons.image, color: Colors.grey, size: 50),
+            
+            // Title text at the bottom
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(150, 0, 0, 0),
+                    ),
+                  ],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

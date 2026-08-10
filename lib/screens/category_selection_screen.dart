@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pet_app/screens/home_screen.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pet_app/api/backend/firebase_service.dart';
+import 'package:pet_app/api/backend/preference_service.dart';
 
 class CategorySelectionScreen extends StatefulWidget {
   const CategorySelectionScreen({super.key});
@@ -33,21 +36,17 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
     });
   }
 
-  @override
+  Future<void> _saveAndContinue() async {
+    await PreferenceService().saveSelectedCategories(_selectedCategories);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final categories = [
-      {'key': 'cat', 'name': l10n.cat, 'icon': '🐱'},
-      {'key': 'dog', 'name': l10n.dog, 'icon': '🐶'},
-      {'key': 'bird', 'name': l10n.bird, 'icon': '🦜'},
-      {'key': 'fish', 'name': l10n.fish, 'icon': '🐠'},
-      {'key': 'cow', 'name': l10n.cow, 'icon': '🐮'},
-      {'key': 'rabbit', 'name': l10n.rabbit, 'icon': '🐰'},
-      {'key': 'turtle', 'name': l10n.turtle, 'icon': '🐢'},
-      {'key': 'snake', 'name': l10n.snake, 'icon': '🐍'},
-      {'key': 'horse', 'name': l10n.horse, 'icon': '🐴'},
-    ];
+    final firebaseService = FirebaseService();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundCream,
@@ -78,56 +77,85 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 0.85,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = categories[index];
-                    final isSelected = _selectedCategories.contains(cat['key']);
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: firebaseService.getCategoriesStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
+                    }
+                    if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(child: Text("No categories found."));
+                    }
 
-                    return GestureDetector(
-                      onTap: () => _toggleCategory(cat['key']!),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primaryOrange : AppColors.surfaceWhite,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: isSelected ? AppColors.primaryOrange : Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              cat['icon']!,
-                              style: const TextStyle(fontSize: 40),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              cat['name']!,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: isSelected ? Colors.white : AppColors.textDark,
-                                fontSize: 14,
+                    final docs = snapshot.data!.docs;
+
+                    return GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 0.85,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: docs.length,
+                      itemBuilder: (context, index) {
+                        final doc = docs[index];
+                        final data = doc.data() as Map<String, dynamic>;
+                        final String id = doc.id;
+                        final String name = data['name'] ?? 'Unknown';
+                        final String imageUrl = data['imageUrl'] ?? '';
+                        final isSelected = _selectedCategories.contains(id);
+
+                        return GestureDetector(
+                          onTap: () => _toggleCategory(id),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.primaryOrange : AppColors.surfaceWhite,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                              border: Border.all(
+                                color: isSelected ? AppColors.primaryOrange : Colors.transparent,
+                                width: 2,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (imageUrl.isNotEmpty)
+                                  ClipOval(
+                                    child: Image.network(
+                                      imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (ctx, err, stack) => const Icon(Icons.pets, size: 40, color: Colors.grey),
+                                    ),
+                                  )
+                                else
+                                  const Icon(Icons.pets, size: 40, color: Colors.grey),
+                                const SizedBox(height: 12),
+                                Text(
+                                  name,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected ? Colors.white : AppColors.textDark,
+                                    fontSize: 14,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -137,15 +165,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _selectedCategories.isNotEmpty
-                      ? () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
-                        }
-                      : null,
+                  onPressed: _selectedCategories.isNotEmpty ? _saveAndContinue : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryOrange,
                     disabledBackgroundColor: Colors.grey[300],
