@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+import 'package:pet_app/theme/app_colors.dart';
+import 'package:pet_app/screens/article_detail_screen.dart';
+
+class CategoryDetailsScreen extends StatelessWidget {
+  final String category;
+  final String categoryName;
+
+  const CategoryDetailsScreen({super.key, required this.category, required this.categoryName});
+
+  @override
+  Widget build(BuildContext context) {
+    final articles = _getArticlesForCategory(category);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(categoryName),
+        backgroundColor: AppColors.backgroundCream,
+        elevation: 0,
+      ),
+      backgroundColor: AppColors.backgroundCream,
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: articles.length,
+        itemBuilder: (context, index) {
+          final article = articles[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16.0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 2,
+            shadowColor: Colors.black12,
+            clipBehavior: Clip.antiAlias,
+            color: Colors.white,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ArticleDetailScreen(
+                      title: article['title']!,
+                      content: article['content']!,
+                      imageUrl: article['imageUrl']!,
+                    ),
+                  ),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.network(
+                    article['imageUrl']!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          article['title']!,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          article['summary']!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  List<Map<String, String>> _getArticlesForCategory(String category) {
+    if (category == 'cat') {
+      return [
+        {
+          'title': 'എങ്ങനെ പൂച്ചകളുടെ ചെള്ള് കളയാം (How to remove cat fleas)',
+          'summary': 'പൂച്ചകളിലെ ചെള്ള് ശല്യം ഒഴിവാക്കാനുള്ള എളുപ്പവഴികൾ.',
+          'content': 'പൂച്ചകളിലെ ചെള്ള് കളയാൻ മികച്ച ഷാംപൂ ഉപയോഗിച്ച് കുളിപ്പിക്കുക. ഒപ്പം വെറ്റിനറി ഡോക്ടറുടെ നിർദ്ദേശപ്രകാരം മരുന്നുകൾ നൽകാം. വീടും പരിസരവും എപ്പോഴും വൃത്തിയായി സൂക്ഷിക്കുക.',
+          'imageUrl': 'https://images.unsplash.com/photo-1513245543132-31f507417b26?q=80&w=600&auto=format&fit=crop',
+        },
+        {
+          'title': 'പൂച്ചകളുടെ ഭക്ഷണം (Cat diet)',
+          'summary': 'പൂച്ചകൾക്ക് നൽകേണ്ട ആരോഗ്യകരമായ ഭക്ഷണങ്ങൾ.',
+          'content': 'പൂച്ചകൾക്ക് പ്രോട്ടീൻ അടങ്ങിയ ഭക്ഷണം നിർബന്ധമാണ്. വേവിച്ച മത്സ്യം, മാംസം എന്നിവ നൽകാം. ഉണങ്ങിയ പെറ്റ് ഫുഡും മികച്ചതാണ്.',
+          'imageUrl': 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=600&auto=format&fit=crop',
+        }
+      ];
+    } else if (category == 'dog') {
+      return [
+        {
+          'title': 'നായ്ക്കളുടെ പരിശീലനം (Dog training)',
+          'summary': 'നിങ്ങളുടെ നായയെ എങ്ങനെ പരിശീലിപ്പിക്കാം.',
+          'content': 'ചെറുപ്പത്തിൽ തന്നെ നായ്ക്കൾക്ക് അടിസ്ഥാന പരിശീലനം നൽകണം. നല്ല പെരുമാറ്റത്തിന് പ്രതിഫലം നൽകുന്നത് പരിശീലനം എളുപ്പമാക്കും.',
+          'imageUrl': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=600&auto=format&fit=crop',
+        }
+      ];
+    } else {
+      return [
+        {
+          'title': 'കൂടുതൽ വിവരങ്ങൾ (More information)',
+          'summary': 'ഈ വിഭാഗത്തിൽ ഉടൻ തന്നെ വിവരങ്ങൾ ചേർക്കുന്നതാണ്.',
+          'content': 'ഈ മൃഗങ്ങളെക്കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ ഉടൻ തന്നെ അപ്ഡേറ്റ് ചെയ്യുന്നതാണ്.',
+          'imageUrl': 'https://images.unsplash.com/photo-1516134884203-b097b6e92b8d?q=80&w=600&auto=format&fit=crop',
+        }
+      ];
+    }
+  }
+}

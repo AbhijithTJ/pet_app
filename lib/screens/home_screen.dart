@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
 import 'package:pet_app/main.dart';
-
+import 'package:pet_app/screens/category_details_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -123,13 +123,21 @@ class HomeScreen extends StatelessWidget {
                 clipBehavior: Clip.none,
                 child: Row(
                   children: [
-                    _buildCategoryPill(l10n.cat, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=150&auto=format&fit=crop', AppColors.categoryCat),
+                    _buildCategoryPill(l10n.cat, 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=150&auto=format&fit=crop', AppColors.categoryCat, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'cat', categoryName: l10n.cat)));
+                    }),
                     const SizedBox(width: 12),
-                    _buildCategoryPill(l10n.dog, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=150&auto=format&fit=crop', AppColors.categoryDog),
+                    _buildCategoryPill(l10n.dog, 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=150&auto=format&fit=crop', AppColors.categoryDog, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'dog', categoryName: l10n.dog)));
+                    }),
                     const SizedBox(width: 12),
-                    _buildCategoryPill(l10n.bird, 'https://images.unsplash.com/photo-1605092676920-8ac5ae40c7c8?q=80&w=150&auto=format&fit=crop', AppColors.categoryBird),
+                    _buildCategoryPill(l10n.bird, 'https://images.unsplash.com/photo-1605092676920-8ac5ae40c7c8?q=80&w=150&auto=format&fit=crop', AppColors.categoryBird, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'bird', categoryName: l10n.bird)));
+                    }),
                     const SizedBox(width: 12),
-                    _buildCategoryPill(l10n.fish, 'https://images.unsplash.com/photo-1524704796725-9fc3044a58b2?q=80&w=150&auto=format&fit=crop', AppColors.categoryFish),
+                    _buildCategoryPill(l10n.fish, 'https://images.unsplash.com/photo-1524704796725-9fc3044a58b2?q=80&w=150&auto=format&fit=crop', AppColors.categoryFish, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDetailsScreen(category: 'fish', categoryName: l10n.fish)));
+                    }),
                   ],
                 ),
               ),
@@ -273,35 +281,38 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryPill(String title, String imageUrl, Color bgColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 16,
-            child: ClipOval(
-              child: Image.network(
-                imageUrl,
-                width: 32,
-                height: 32,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, size: 16),
+  Widget _buildCategoryPill(String title, String imageUrl, Color bgColor, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 16,
+              child: ClipOval(
+                child: Image.network(
+                  imageUrl,
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, size: 16),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(width: 4),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
       ),
     );
   }
