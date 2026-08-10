@@ -6,6 +6,7 @@ import 'package:pet_app/screens/category_details_screen.dart';
 import 'package:pet_app/screens/all_categories_screen.dart';
 import 'package:pet_app/screens/all_tips_screen.dart';
 import 'package:pet_app/screens/article_detail_screen.dart';
+import 'package:pet_app/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
 import 'package:pet_app/api/backend/preference_service.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<String> _selectedCategories = [];
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -41,19 +43,62 @@ class _HomeScreenState extends State<HomeScreen> {
     
     return Scaffold(
       backgroundColor: AppColors.backgroundCream,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: _buildBody(context, l10n, firebaseService),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: AppColors.surfaceWhite,
+        selectedItemColor: AppColors.primaryOrange,
+        unselectedItemColor: Colors.grey,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.navHome,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.shopping_bag_outlined),
+            activeIcon: const Icon(Icons.shopping_bag),
+            label: l10n.navShop,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.lightbulb_outline),
+            activeIcon: const Icon(Icons.lightbulb),
+            label: l10n.navTips,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, AppLocalizations l10n, FirebaseService firebaseService) {
+    // Default to Home View
+    final isMalayalam = Localizations.localeOf(context).languageCode == 'ml';
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
               // Header
               Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                    },
+                    child: const CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(
+                          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -217,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AllTipsScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AllTipsScreen()));
                     },
                     child: Text(l10n.viewAll, style: const TextStyle(color: AppColors.primaryOrange, fontWeight: FontWeight.bold)),
                   )
@@ -287,38 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.surfaceWhite,
-        selectedItemColor: AppColors.primaryOrange,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
-            label: l10n.navHome,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.shopping_bag_outlined),
-            activeIcon: const Icon(Icons.shopping_bag),
-            label: l10n.navShop,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.lightbulb_outline),
-            activeIcon: const Icon(Icons.lightbulb),
-            label: l10n.navTips,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline),
-            activeIcon: const Icon(Icons.person),
-            label: l10n.navProfile,
-          ),
-        ],
-      ),
-    );
+      );
   }
 
   Widget _buildBannerSlider(String title, String imageUrl) {

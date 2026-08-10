@@ -19,12 +19,25 @@ class FirebaseService {
     );
   }
 
-  /// Register with email and password
-  Future<UserCredential> register(String email, String password) async {
-    return await _auth.createUserWithEmailAndPassword(
+  /// Register with email and password and save profile to Firestore
+  Future<UserCredential> register(String email, String password, String name, String phone) async {
+    final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+    
+    // Save user profile with role: 'user'
+    if (userCredential.user != null) {
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'role': 'user',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+    
+    return userCredential;
   }
 
   /// Sign out

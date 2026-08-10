@@ -59,8 +59,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      // In a real app, you might save name and phone to Firestore as well.
-      await _firebaseService.register(email, password);
+      // Save name, phone and default 'user' role to Firestore
+      await _firebaseService.register(email, password, name, phone);
       if (mounted) {
         Navigator.pop(context); // Go back after successful registration
       }

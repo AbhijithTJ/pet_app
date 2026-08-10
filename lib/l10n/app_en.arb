@@ -65,5 +65,11 @@
   "alreadyHaveAccount": "Already have an account?",
   "loginRequired": "Login Required",
   "loginRequiredMessage": "You need to login to post a comment or like this article.",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "profile": "Profile",
+  "guest": "Guest User",
+  "logout": "Logout",
+  "changeLanguage": "Change Language",
+  "settings": "Settings",
+  "account": "Account"
 }

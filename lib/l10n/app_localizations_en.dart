@@ -153,4 +153,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subtitleValatti => 'Your ultimate pet care companion';
+
+  @override
+  String get loginToContinue => 'Login to continue to your account';
+
+  @override
+  String get emailOrPhone => 'Email or Phone';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get createAccountToGetStarted => 'Create an account to get started';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get iAgreeTo => 'I agree to the ';
+
+  @override
+  String get termsAndConditions => 'Terms and Conditions';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get loginRequired => 'Login Required';
+
+  @override
+  String get loginRequiredMessage =>
+      'You need to login to post a comment or like this article.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get guest => 'Guest User';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get changeLanguage => 'Change Language';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get account => 'Account';
 }

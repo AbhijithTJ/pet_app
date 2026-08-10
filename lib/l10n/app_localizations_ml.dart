@@ -154,4 +154,80 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get subtitleValatti => 'നിങ്ങളുടെ പ്രിയപ്പെട്ട പെറ്റ് കെയർ ആപ്പ്';
+
+  @override
+  String get loginToContinue => 'നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് ലോഗിൻ ചെയ്യുക';
+
+  @override
+  String get emailOrPhone => 'ഇമെയിൽ അല്ലെങ്കിൽ ഫോൺ നമ്പർ';
+
+  @override
+  String get email => 'ഇമെയിൽ';
+
+  @override
+  String get password => 'പാസ്‌വേഡ്';
+
+  @override
+  String get forgotPassword => 'പാസ്‌വേഡ് മറന്നുപോയോ?';
+
+  @override
+  String get login => 'ലോഗിൻ ചെയ്യുക';
+
+  @override
+  String get dontHaveAccount => 'അക്കൗണ്ട് ഇല്ലേ?';
+
+  @override
+  String get signUp => 'സൈൻ അപ്പ് ചെയ്യുക';
+
+  @override
+  String get createAccount => 'അക്കൗണ്ട് സൃഷ്ടിക്കുക';
+
+  @override
+  String get createAccountToGetStarted => 'തുടങ്ങാൻ ഒരു അക്കൗണ്ട് ഉണ്ടാക്കുക';
+
+  @override
+  String get fullName => 'മുഴുവൻ പേര്';
+
+  @override
+  String get phoneNumber => 'ഫോൺ നമ്പർ';
+
+  @override
+  String get confirmPassword => 'പാസ്‌വേഡ് ഉറപ്പാക്കുക';
+
+  @override
+  String get iAgreeTo => 'ഞാൻ ';
+
+  @override
+  String get termsAndConditions => 'നിബന്ധനകളും വ്യവസ്ഥകളും അംഗീകരിക്കുന്നു';
+
+  @override
+  String get alreadyHaveAccount => 'നേരത്തെ അക്കൗണ്ട് ഉണ്ടോ?';
+
+  @override
+  String get loginRequired => 'ലോഗിൻ ചെയ്യേണ്ടതുണ്ട്';
+
+  @override
+  String get loginRequiredMessage =>
+      'ലൈക്ക് ചെയ്യാനോ കമൻ്റ് ചെയ്യാനോ നിങ്ങൾ ലോഗിൻ ചെയ്യേണ്ടതുണ്ട്.';
+
+  @override
+  String get cancel => 'റദ്ദാക്കുക';
+
+  @override
+  String get profile => 'പ്രൊഫൈൽ';
+
+  @override
+  String get guest => 'അതിഥി';
+
+  @override
+  String get logout => 'ലോഗ് ഔട്ട് ചെയ്യുക';
+
+  @override
+  String get changeLanguage => 'ഭാഷ മാറ്റുക';
+
+  @override
+  String get settings => 'സെറ്റിങ്സ്';
+
+  @override
+  String get account => 'അക്കൗണ്ട്';
 }
