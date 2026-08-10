@@ -5,6 +5,7 @@ import 'package:pet_app/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_app/api/backend/firebase_service.dart';
 import 'package:pet_app/api/backend/preference_service.dart';
+import 'package:pet_app/utils/localization_helper.dart';
 
 class CategorySelectionScreen extends StatefulWidget {
   const CategorySelectionScreen({super.key});
@@ -101,7 +102,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                         final doc = docs[index];
                         final data = doc.data() as Map<String, dynamic>;
                         final String id = doc.id;
-                        final String name = data['name'] ?? 'Unknown';
+                        final String name = getLocalizedText(data, 'name', context).isNotEmpty ? getLocalizedText(data, 'name', context) : 'Unknown';
                         final String imageUrl = data['imageUrl'] ?? '';
                         final isSelected = _selectedCategories.contains(id);
 
