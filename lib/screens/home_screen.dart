@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pet_app/theme/app_colors.dart';
 import 'package:pet_app/l10n/app_localizations.dart';
@@ -181,19 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   return SizedBox(
                     height: 180,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      clipBehavior: Clip.none,
-                      itemCount: snapshot.data!.docs.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 16),
-                      itemBuilder: (context, index) {
-                        final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                        final String title = data['title'] ?? '';
-                        final String imageUrl = data['imageUrl'] ?? '';
-
-                        return _buildBannerSlider(title, imageUrl);
-                      },
-                    ),
+                    child: _AutoSliderWidget(docs: snapshot.data!.docs),
                   );
                 },
               ),
@@ -599,6 +588,159 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AutoSliderWidget extends StatefulWidget {
+  final List<QueryDocumentSnapshot> docs;
+
+  const _AutoSliderWidget({required this.docs});
+
+  @override
+  State<_AutoSliderWidget> createState() => _AutoSliderWidgetState();
+}
+
+class _AutoSliderWidgetState extends State<_AutoSliderWidget> {
+  late PageController _pageController;
+  int _currentPage = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.9, initialPage: 0);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (widget.docs.isEmpty) return;
+      if (_currentPage < widget.docs.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.fastOutSlowIn,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.docs.length,
+            onPageChanged: (int page) {
+              if (mounted) {
+                setState(() {
+                  _currentPage = page;
+                });
+              }
+            },
+            itemBuilder: (context, index) {
+              final data = widget.docs[index].data() as Map<String, dynamic>;
+              final String title = data['title'] ?? '';
+              final String imageUrl = data['imageUrl'] ?? '';
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: _buildBannerSliderItem(title, imageUrl),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(widget.docs.length, (index) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: _currentPage == index ? 24 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _currentPage == index 
+                    ? AppColors.primaryOrange 
+                    : Colors.grey[300],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBannerSliderItem(String title, String imageUrl) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.grey[200],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (imageUrl.isNotEmpty)
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => 
+                   const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+              )
+            else
+              const Icon(Icons.image, color: Colors.grey, size: 50),
+            
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 3.0,
+                      color: Color.fromARGB(150, 0, 0, 0),
+                    ),
+                  ],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
